@@ -1,0 +1,287 @@
+﻿
+@{
+    ViewBag.Title = "Check";
+}
+
+<h3>-----------------------------------REMOVE COTNROL-------------------------------------</h3>
+<div id="div1">
+    <ul data-bind="foreach: places">
+        <li>
+            <span data-bind="text: $data"></span>
+            <button data-bind="click: $parent.removePlace">Remove</button>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript">
+    function MyViewModel() {
+        var self = this;
+        self.places = ko.observableArray(['London', 'Paris', 'Tokyo']);
+
+        // The current item will be passed as the first parameter, so we know which place to remove
+        self.removePlace = function (place) {
+            self.places.remove(place)
+        }
+    }
+    ko.applyBindings(new MyViewModel(), document.getElementById("div1"));
+</script>
+
+<h3>-----------------------------------CLICK COUNTER----------------------------------------</h3>
+<div id="div2">
+    You have  clicked <span data-bind="text : numberOfClicks"></span> times.
+    <button data-bind="click:incrementClickCounter">Click Me</button>
+</div>
+
+<script type="text/javascript">
+
+    var viewModel = {
+        numberOfClicks: ko.observable(0),
+        incrementClickCounter: function () {
+            var previousCount = this.numberOfClicks();
+            this.numberOfClicks(previousCount + 1);
+        }
+    };
+
+    ko.applyBindings(viewModel, document.getElementById("div2"));
+
+</script>
+<h3>------------------------------------CLICK BUBBLE--------------------------------------</h3>
+<div data-bind="click: myDivHandler">
+    <button data-bind="click: myButtonHandler, clickBubble: false">
+        Click me
+    </button>
+</div>
+
+<h3>------------------------------------EVENT BINDING--------------------------------------</h3>
+<div id="eventBinding">
+    <div data-bind="event: { mouseover: enableDetails, mouseout: disableDetails }">
+        Mouse over me
+    </div>
+    <div data-bind="visible: detailsEnabled">
+        Details
+    </div>
+</div>
+
+<script type="text/javascript">
+    var viewModel = {
+        detailsEnabled: ko.observable(false),
+        enableDetails: function () {
+            this.detailsEnabled(true);
+        },
+        disableDetails: function () {
+            this.detailsEnabled(false);
+        }
+    };
+    ko.applyBindings(viewModel, document.getElementById("eventBinding"));
+</script>
+
+<h3>------------------------------------CURRENT ITEM--------------------------------------</h3>
+<div id="currentItem">
+    <ul data-bind="foreach: places">
+        <li data-bind="text: $data, event: { mouseover: $parent.logMouseOver }"> </li>
+    </ul>
+    <p>You seem to be interested in: <span data-bind="text: lastInterest"> </span></p>
+</div>
+
+<script type="text/javascript">
+    function MyViewModel() {
+        var self = this;
+        self.lastInterest = ko.observable();
+        self.places = ko.observableArray(['London', 'Paris', 'Tokyo']);
+
+        // The current item will be passed as the first parameter, so we know which place was hovered over
+        self.logMouseOver = function (place) {
+            self.lastInterest(place);
+        }
+    }
+    ko.applyBindings(new MyViewModel(), document.getElementById("currentItem"));
+</script>
+
+<h3>------------------------------------ENABLE-----------------------------------------</h3>
+<div id="enable">
+    <p>
+        <input type='checkbox' data-bind="checked: hasCellphone" />
+        I have a cellphone
+    </p>
+    <p>
+        Your cellphone number:
+        <input type='text' data-bind="value: cellphoneNumber, enable: hasCellphone" />
+    </p>
+</div>
+
+<script type="text/javascript">
+    var viewModel = {
+        hasCellphone: ko.observable(false),
+        cellphoneNumber: ""
+    };
+    ko.applyBindings(viewModel, document.getElementById("enable"));
+</script>
+
+<h3>------------------------------------VALUE ALLOW UNSET-----------------------------------------</h3>
+<div id="valueAllowUnset">
+    <p>
+        Select a country:
+        <select data-bind="options: countries,
+                       optionsCaption: 'Choose one...',
+                       value: selectedCountry,
+                       valueAllowUnset: true"></select>
+    </p>
+</div>
+<script type="text/javascript">
+    var viewModel = {
+        countries: ['Japan', 'Bolivia', 'New Zealand'],
+        selectedCountry: ko.observable('Japan')
+    };
+    ko.applyBindings(viewModel, document.getElementById("valueAllowUnset"));
+</script>
+
+<h3>------------------------------------CLICK TO EDIT (Has Focus)-----------------------------------------</h3>
+<div id="editing">
+    <p>
+        Name:
+        <b data-bind="visible: !editing(), text: name, click: edit">&nbsp;</b>
+        <input data-bind="visible: editing, value: name, hasFocus: editing" />
+    </p>
+    <p><em>Click the name to edit it; click elsewhere to apply changes.</em></p>
+</div>
+<script type="text/javascript">
+    function PersonViewModel(name) {
+        // Data
+        this.name = ko.observable(name);
+        this.editing = ko.observable(false);
+
+        // Behaviors
+        this.edit = function () { this.editing(true) }
+    }
+    ko.applyBindings(new PersonViewModel("Manveer Singh"), document.getElementById("editing"));
+</script>
+
+<h3>------------------------------------CHECKED BINDING-----------------------------------------</h3>
+<div id="checkedBinding">
+    <!-- ko foreach: items -->
+    <input type="radio" data-bind="checkedValue: $data, checked: $root.chosenItems" />
+    <span data-bind="text: itemName"></span>
+    <!-- /ko -->
+    <br />
+    <!-- ko foreach: items -->
+    <input type="checkbox" data-bind="checkedValue: $data, checked: $root.chosenItems" />
+    <span data-bind="text: itemName"></span>
+    <!-- /ko -->
+</div>
+<script type="text/javascript">
+    var viewModel = {
+        items: ko.observableArray([
+            { itemName: 'Choice 1' },
+            { itemName: 'Choice 2' }
+        ]),
+        chosenItems: ko.observableArray()
+    };
+    ko.applyBindings(viewModel, document.getElementById("checkedBinding"));
+</script>
+
+<h3>------------------------------------SELECTED OPTIONS-----------------------------------------</h3>
+<div id="selectedOptions">
+    <p>
+        Choose some countries you'd like to visit:
+        <select data-bind="options: availableCountries, selectedOptions: chosenCountries" size="5" multiple="true"></select>
+    </p>
+</div>
+
+<script type="text/javascript">
+    var viewModel = {
+        availableCountries: ko.observableArray(['France', 'Germany', 'Spain']),
+        chosenCountries: ko.observableArray(['Germany']) // Initially, only Germany is selected
+    };
+
+    // ... then later ...
+    viewModel.chosenCountries.push('France'); // Now France is selected too
+
+    ko.applyBindings(viewModel, document.getElementById("selectedOptions"));
+</script>
+
+<h3>------------------------------------UNIQUE NAME-----------------------------------------</h3>
+
+<input data-bind="value: someModelProperty, uniqueName: false" />
+
+<h3>------------------------------------TEMPLATE--------------------------------------------</h3>
+<div id="template">
+    Here are the participants:
+    <div data-bind="template: { name: 'person-template', data: buyer }"></div>
+    <div data-bind="template: { name: 'person-template', data: seller }"></div>
+    <div data-bind="template:{name:'location-template',foreach:location}"></div>
+</div>
+
+<script type="text/html" id="person-template">
+    <h3 data-bind="text: name"></h3>
+    <p>Credits: <span data-bind="text: credits"></span></p>
+</script>
+
+<script type="text/html" id="location-template">
+    <h2 data-bind="text:location"></h2>
+    <p>State:<span data-bind="text:state"></span></p>
+</script>
+
+<script type="text/javascript">
+    function MyViewModel() {
+        this.buyer = { name: 'Franklin', credits: 250 };
+        this.seller = { name: 'Mario', credits: 5800 };
+        this.location = [
+            { location: 'Noida', state: 'Uttar Pradesh' },
+            { location: 'Rishikesh', state: 'UK' }];
+    }
+    ko.applyBindings(new MyViewModel(), document.getElementById("template"));
+</script>
+
+<h3>------------------------------------TEMPLATE with Multiple Loop--------------------------------</h3>
+<ul data-bind="template: { name: 'seasonTemplate', foreach: seasons, as: 'season' }" id="templateMultiple"></ul>
+
+<script type="text/html" id="seasonTemplate">
+    <li>
+        <strong data-bind="text: name"></strong>
+        <ul data-bind="template: { name: 'monthTemplate', foreach: months, as: 'month' }"></ul>
+    </li>
+</script>
+
+<script type="text/html" id="monthTemplate">
+    <li>
+        <span data-bind="text: month"></span>
+        is in
+        <span data-bind="text: season.name"></span>
+    </li>
+</script>
+
+<script>
+    var viewModel = {
+        seasons: ko.observableArray([
+            { name: 'Spring', months: ['March', 'April', 'May'] },
+            { name: 'Summer', months: ['June', 'July', 'August'] },
+            { name: 'Autumn', months: ['September', 'October', 'November'] },
+            { name: 'Winter', months: ['December', 'January', 'February'] }
+        ])
+    };
+    ko.applyBindings(viewModel, document.getElementById("templateMultiple"));
+</script>
+
+<div id="spaces">
+    <!-- no spaces -->
+    <select data-bind="options:availableCountries,optionsText:'countryName',value:selectedCountry,optionsCaption:'Choose...'"></select>
+
+    <!-- some spaces -->
+    <select data-bind="options : availableCountries, optionsText : 'countryName', value : selectedCountry, optionsCaption : 'Choose...'"></select>
+
+    <!-- spaces and newlines -->
+    <select data-bind="
+    options: availableCountries,
+    optionsText: 'countryName',
+    value: selectedCountry,
+    optionsCaption: 'Choose...'"></select>
+    <span data-bind="text:CountryWithCode"></span>
+</div>
+<script>
+    var viewModel = {
+        availableCountries: ko.observableArray([{ countryName: 'India', value: 1 }, { countryName: 'US', value: 2 }]),
+        selectedCountry: ko.observable(),
+        CountryWithCode: ko.computed(function () { this.countryName + "**" + this.value })
+    };
+
+    ko.applyBindings(viewModel, document.getElementById("spaces"));
+</script>
