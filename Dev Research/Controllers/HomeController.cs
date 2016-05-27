@@ -67,8 +67,6 @@ namespace Dev_Research.Controllers
 
                     shortUrl = fullUrl;
                 }
-
-
             }
 
             return shortUrl;
